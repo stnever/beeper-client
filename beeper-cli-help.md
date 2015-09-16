@@ -25,6 +25,6 @@ Options:
                     If the first character is NOT a slash, then it
                     is APPENDED to the hostname:
 
-                    -f webserver      -> hostname/webserver
-                    -f /jobsource     -> jobsource
+                    -s webserver      -> hostname/webserver
+                    -s /jobsource     -> jobsource
 
