@@ -32,9 +32,13 @@ for ( var i = 2; i < args.length; i++ ) {
 
 var client = new BeeperClient(config)
 
-beep.source = (beep.source.charAt(0) == '/')
+if ( beep.source == null ) {
+  beep.source = beep.sourcePrefix;
+} else {
+  beep.source = (beep.source.charAt(0) == '/')
   ? beep.source.substring(1)
   : beep.sourcePrefix + '/' + beep.source;
+}
 
 client.postBeep(beep).then(function() {
   console.log('Beep sent successfully at ' + new Date().toISOString());
