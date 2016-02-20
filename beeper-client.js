@@ -7,16 +7,25 @@ var BeeperClient = module.exports = function BeeperClient(opts) {
   _.assign(this, opts);
 }
 
-BeeperClient.prototype.postBeep = function(opts) {
-  if ( this.host == null ) return Promise.reject('Missing beeper host');
-  if ( opts.source == null || opts.source.length < 1 )
-    return Promise.reject('Missing beep source');
+BeeperClient.prototype.postBeep = function(beep) {
+  var me = this
+  return Promise.try(function() {
+    var body = preProcess(beep)
+    return me.doPost(body)
+  })
+}
 
-  if ( opts.contents == null || opts.contents.length < 1 )
-    return Promise.reject('Missing beep contents');
-  if ( opts.ps ) {
-    opts.contents = util.format.apply(null, [opts.contents].concat(opts.ps));
-  }
+BeeperClient.prototype.postBulk = function(beeps) {
+  var me = this
+  return Promise.try(function() {
+    var body = beeps.map(preProcess)
+    return me.doPost(body)
+  })
+}
+
+BeeperClient.prototype.doPost = function(body) {
+  if ( this.host == null )
+    throw new Error('Missing beeper host')
 
   return request.postAsync({
     method: 'POST',
@@ -25,7 +34,7 @@ BeeperClient.prototype.postBeep = function(opts) {
       access_token: this.token
     },
     json: true,
-    body: _.pick(opts, 'source', 'contents', 'data')
+    body: body
   }).spread(function(res, body) {
     if ( res.statusCode != 200 ) {
       throw new Error('Bad response from BeeperServer: ' +
@@ -33,7 +42,25 @@ BeeperClient.prototype.postBeep = function(opts) {
     }
 
     return body;
-  });
+  })
+}
+
+function validate(beep) {
+  if ( beep.source == null || beep.source.length < 1 )
+    throw new Error('Missing beep source')
+
+  if ( beep.contents == null || beep.contents.length < 1 )
+    throw new Error('Missing beep contents')
+}
+
+function preProcess(beep) {
+  validate(beep)
+
+  if ( beep.ps )
+    beep.contents = util.format.apply(null,
+      [beep.contents].concat(beep.ps) )
+
+  return _.pick(beep, 'source', 'contents', 'data')
 }
 
 function atMost(s, limit) {
