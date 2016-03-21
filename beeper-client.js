@@ -1,8 +1,11 @@
 var _ = require('lodash'),
     util = require('util'),
-    join = require('url').resolve,
     Promise = require('bluebird'),
     Resource = require('./resource');
+
+function join(a, b) {
+  return _.trimEnd(a, '/') + '/' + _.trimStart(b, '/')
+}
 
 var BeeperClient = module.exports = function BeeperClient(opts) {
   if ( opts.host == null )

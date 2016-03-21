@@ -1,13 +1,18 @@
 var _ = require('lodash'),
     util = require('util'),
     Promise = require('bluebird'),
-    join = require('url').resolve,
     moment = require('moment'),
     prequest = require('prequest');
+
+function join(a, b) {
+  return _.trimEnd(a, '/') + '/' + _.trimStart(b, '/')
+}
 
 var Resource = module.exports = function Resource(endpoint, opts) {
   this.opts = opts || {}
   this.endpoint = endpoint
+
+  console.log(this)
 }
 
 Resource.prototype.findAll = function(params) {
