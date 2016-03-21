@@ -4,7 +4,7 @@ var _ = require('lodash'),
     Resource = require('./resource');
 
 function join(a, b) {
-  return _.trimEnd(a, '/') + '/' + _.trimStart(b, '/')
+  return _.trimRight(a, '/') + '/' + _.trimLeft(b, '/')
 }
 
 var BeeperClient = module.exports = function BeeperClient(opts) {

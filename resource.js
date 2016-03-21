@@ -5,7 +5,7 @@ var _ = require('lodash'),
     prequest = require('prequest');
 
 function join(a, b) {
-  return _.trimEnd(a, '/') + '/' + _.trimStart(b, '/')
+  return _.trimRight(a, '/') + '/' + _.trimLeft(b, '/')
 }
 
 var Resource = module.exports = function Resource(endpoint, opts) {
