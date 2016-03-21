@@ -13,8 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bluebird": "^2.9.34",
+    "bluebird": "^3.1.1",
     "lodash": "^3.10.1",
-    "request": "^2.61.0"
+    "param-parser": "git@bitbucket.org:horustm/param-parser.git",
+    "prequest": "git@github.com:stnever/prequest.git"
   }
 }

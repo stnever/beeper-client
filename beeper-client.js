@@ -1,17 +1,27 @@
 var _ = require('lodash'),
     util = require('util'),
+    join = require('url').resolve,
     Promise = require('bluebird'),
-    request = Promise.promisifyAll(require('request'));
+    Resource = require('./resource');
 
 var BeeperClient = module.exports = function BeeperClient(opts) {
+  if ( opts.host == null )
+    throw new Error('Missing beeper host')
+
   _.assign(this, opts);
+
+  var headers = {access_token: this.token}
+
+  this.Beep = new Resource(join(this.host, 'api/beeps'), headers)
+  this.Account = new Resource(join(this.host, 'api/accounts'), headers)
+  this.Source = new Resource(join(this.host, 'api/sources'), headers)
 }
 
 BeeperClient.prototype.postBeep = function(beep) {
   var me = this
   return Promise.try(function() {
     var body = preProcess(beep)
-    return me.doPost(body)
+    return me.Beep.save(body)
   })
 }
 
@@ -19,29 +29,7 @@ BeeperClient.prototype.postBulk = function(beeps) {
   var me = this
   return Promise.try(function() {
     var body = beeps.map(preProcess)
-    return me.doPost(body)
-  })
-}
-
-BeeperClient.prototype.doPost = function(body) {
-  if ( this.host == null )
-    throw new Error('Missing beeper host')
-
-  return request.postAsync({
-    method: 'POST',
-    uri: this.host + '/api/beeps',
-    headers: {
-      access_token: this.token
-    },
-    json: true,
-    body: body
-  }).spread(function(res, body) {
-    if ( res.statusCode != 200 ) {
-      throw new Error('Bad response from BeeperServer: ' +
-        res.statusCode + ' ' + atMost(body, 100));
-    }
-
-    return body;
+    return me.Beep.save(body)
   })
 }
 
@@ -60,13 +48,5 @@ function preProcess(beep) {
     beep.contents = util.format.apply(null,
       [beep.contents].concat(beep.ps) )
 
-  return _.pick(beep, 'source', 'contents', 'data')
-}
-
-function atMost(s, limit) {
-  if ( !_.isString(s) )
-    s = JSON.stringify(s);
-
-  if ( s == null || s.length < limit ) return s;
-  return s.substring(0, limit) + '... (' + s.length + ' chars)';
+  return _.pick(beep, 'source', 'contents', 'tags', 'data')
 }
