@@ -8,11 +8,24 @@ function join(a, b) {
   return _.trimRight(a, '/') + '/' + _.trimLeft(b, '/')
 }
 
+function logQs(obj) {
+  if ( obj == null || Object.keys(obj).length < 1 ) return '';
+  return _.reduce(obj, function(acc, val, key) {
+    if ( _.isDate(val) ) val = moment(val).format()
+    acc.push(key + '=' + val)
+    return acc
+  }, []).join(' ')
+}
+
+function go(opts) {
+  console.log('About to %s %s %s', opts.method || 'GET',
+    opts.url, logQs(opts.qs))
+  return prequest(opts)
+}
+
 var Resource = module.exports = function Resource(endpoint, opts) {
   this.opts = opts || {}
   this.endpoint = endpoint
-
-  console.log(this)
 }
 
 Resource.prototype.findAll = function(params) {
@@ -22,7 +35,7 @@ Resource.prototype.findAll = function(params) {
     return '' + val
   })
 
-  return prequest({
+  return go({
     url: this.endpoint,
     qs: strParams,
     headers: this.opts.headers
@@ -30,27 +43,29 @@ Resource.prototype.findAll = function(params) {
 }
 
 Resource.prototype.find = function(id) {
-  return prequest({
+  return go({
     url: join(this.endpoint, id),
     headers: this.opts.headers
   })
 }
 
 Resource.prototype.save = function(id, obj) {
-  console.log('saving', obj, this)
 
   if ( _.isPlainObject(id) ) {
+    var idProp = this.opts.idProp || 'id'
     obj = id
-    id = obj.id
+    id = obj[idProp]
   }
 
+  console.log('Saving object with id %s:', id, obj)
+
   if ( id == null ) {
-    return prequest({
+    return go({
       method: 'POST', url: this.endpoint, body: obj,
       headers: this.opts.headers
     })
   } else {
-    return prequest({
+    return go({
       method: 'PUT', url: join(this.endpoint, id), body: obj,
       headers: this.opts.headers
     })
@@ -58,7 +73,7 @@ Resource.prototype.save = function(id, obj) {
 }
 
 Resource.prototype.patch = function(id, what) {
-  return prequest({
+  return go({
     method: 'PATCH',
     url: join(this.endpoint, id),
     body: what,
@@ -67,8 +82,14 @@ Resource.prototype.patch = function(id, what) {
 }
 
 Resource.prototype.delete = function(obj) {
-  var id = _.isPlainObject(obj) ? obj.id : obj;
-  return prequest({
+
+  var id = obj
+  if ( _.isPlainObject(obj) ) {
+    var idProp = this.opts.idProp || 'id'
+    id = obj[idProp]
+  }
+
+  return go({
     method: 'DELETE',
     url: join(this.endpoint, id),
     headers: this.opts.headers

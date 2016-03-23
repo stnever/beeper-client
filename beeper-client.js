@@ -15,9 +15,17 @@ var BeeperClient = module.exports = function BeeperClient(opts) {
 
   var headers = {access_token: this.token}
 
-  this.Beep = new Resource(join(this.host, 'api/beeps'), headers)
-  this.Account = new Resource(join(this.host, 'api/accounts'), headers)
-  this.Source = new Resource(join(this.host, 'api/sources'), headers)
+  this.Beep = new Resource(join(this.host, 'api/beeps'), {
+    headers: headers
+  })
+
+  this.Account = new Resource(join(this.host, 'api/accounts'), {
+    headers: headers, idProp: 'code'
+  })
+
+  this.Source = new Resource(join(this.host, 'api/sources'), {
+    headers: headers, idProp: 'code'
+  })
 }
 
 BeeperClient.prototype.postBeep = function(beep) {

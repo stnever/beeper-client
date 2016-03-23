@@ -21,6 +21,12 @@ _.assign(replServer.context, {
   l: _,
   moment: require('moment'),
   bc: new BeeperClient({host: host}),
-  j: function(o) { console.log(JSON.stringify(o)) },
+  j: function(o) {
+    var s = ( _.isArray(o) )
+      ? _.map(o, _.ary(JSON.stringify, 1)).join('\n')
+      : JSON.stringify(o)
+
+    console.log(s)
+  },
   jp: function(o) { console.log(JSON.stringify(o, null, ' ')) }
 })
