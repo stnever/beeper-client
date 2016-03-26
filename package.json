@@ -7,15 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "beeper": "./beeper-cli.js"
+    "beeper": "./bin/beeper-cli.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.1.1",
+    "debug": "^2.2.0",
     "lodash": "^3.10.1",
-    "param-parser": "git@bitbucket.org:horustm/param-parser.git",
-    "prequest": "git@github.com:stnever/prequest.git"
+    "prequest": "stnever/prequest"
   }
 }

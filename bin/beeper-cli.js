@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var BeeperClient = require('./beeper-client.js'),
+var BeeperClient = require('../beeper-client.js'),
     os = require('os'),
     fs = require('fs');
 

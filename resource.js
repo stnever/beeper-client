@@ -2,6 +2,7 @@ var _ = require('lodash'),
     util = require('util'),
     Promise = require('bluebird'),
     moment = require('moment'),
+    debug = require('debug')('beeper-client')
     prequest = require('prequest');
 
 function join(a, b) {
@@ -18,7 +19,7 @@ function logQs(obj) {
 }
 
 function go(opts) {
-  console.log('About to %s %s %s', opts.method || 'GET',
+  debug('About to %s %s %s', opts.method || 'GET',
     opts.url, logQs(opts.qs))
   return prequest(opts)
 }
@@ -56,8 +57,6 @@ Resource.prototype.save = function(id, obj) {
     obj = id
     id = obj[idProp]
   }
-
-  console.log('Saving object with id %s:', id, obj)
 
   if ( id == null ) {
     return go({
