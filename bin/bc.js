@@ -4,7 +4,8 @@ var _ = require('lodash'),
     BeeperClient = require('../beeper-client'),
     repl = require('repl');
 
-var host = process.argv[2] || 'http://localhost:4444'
+var host = process.argv[2] || 'http://localhost:4444',
+    token = process.argv[3] || null
 
 console.log('variables:')
 console.log('  l      => lodash')
@@ -20,7 +21,7 @@ var replServer = repl.start({
 _.assign(replServer.context, {
   l: _,
   moment: require('moment'),
-  bc: new BeeperClient({host: host}),
+  bc: new BeeperClient({host: host, token: token}),
   j: function(o) {
     var s = ( _.isArray(o) )
       ? _.map(o, _.ary(JSON.stringify, 1)).join('\n')
