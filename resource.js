@@ -47,6 +47,11 @@ Resource.prototype.find = function(id) {
   return go({
     url: join(this.endpoint, id),
     headers: this.opts.headers
+  }).catch(function(err) {
+    // Retornar 404 indica que o objeto solicitado não existe. Outros códigos
+    // de erro são inesperados e devem ser relançados.
+    if ( err.statusCode === 404 ) return null;
+    throw err
   })
 }
 
