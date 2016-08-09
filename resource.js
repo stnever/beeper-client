@@ -2,7 +2,7 @@ var _ = require('lodash'),
     util = require('util'),
     Promise = require('bluebird'),
     moment = require('moment'),
-    debug = require('debug')('beeper-client')
+    debug = require('debug')('beeper-client'),
     prequest = require('prequest');
 
 function join(a, b) {
