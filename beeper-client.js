@@ -1,7 +1,9 @@
 var _ = require('lodash'),
     util = require('util'),
     Promise = require('bluebird'),
-    Resource = require('./resource');
+    Resource = require('./resource'),
+    debug = require('debug')('beeper-client'),
+    prequest = require('prequest');
 
 function join(a, b) {
   return _.trimRight(a, '/') + '/' + _.trimLeft(b, '/')
@@ -26,6 +28,15 @@ var BeeperClient = module.exports = function BeeperClient(opts) {
   this.Source = new Resource(join(this.host, 'api/sources'), {
     headers: headers, idProp: 'code'
   })
+
+  this.whoami = function() {
+    var opts = {
+      url: join(this.host, 'api/oauth/whoami'),
+      headers: headers
+    }
+    debug('About to GET %s', opts.url)
+    return prequest(opts)
+  }
 }
 
 BeeperClient.prototype.postBeep = function(beep) {
